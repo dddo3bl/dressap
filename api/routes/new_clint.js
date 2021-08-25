@@ -5,10 +5,10 @@ const multer  = require('multer')();
 // const upload  = multer({ storage: multer.memoryStorage() });
 
 const db = mysql.createConnection({
-    host : "remotemysql.com",
-    user : "GpLT7s5YHT",
-    database : "GpLT7s5YHT",
-    password: "pUbbdWh5ZM"
+    host : "sql4.freemysqlhosting.net",
+    user : "sql4432813",
+    database : "sql4432813",
+    password: "sewZMpQMeb"
 });
 
 
