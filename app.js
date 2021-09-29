@@ -13,8 +13,8 @@ const db = mysql.createConnection({
 });
 
 // Routes which Handel request
-const productRouters = require('./api/routes/products');
-const ordrstRouters = require('./api/routes/orders');
+// const productRouters = require('./api/routes/products');
+// const ordrstRouters = require('./api/routes/orders');
 const newClinttRouters = require('./api/routes/new_clint');
 
 app.use(morgan('dev'));
@@ -30,8 +30,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/products',productRouters);
-app.use('/orders',ordrstRouters);
+// app.use('/products',productRouters);
+// app.use('/orders',ordrstRouters);
 app.use('/newclint',newClinttRouters);
 
 // handel errors

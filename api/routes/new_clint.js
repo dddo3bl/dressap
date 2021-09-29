@@ -2,50 +2,59 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const multer  = require('multer')();
-// const upload  = multer({ storage: multer.memoryStorage() });
 
 const db = mysql.createConnection({
-    host : "sql4.freemysqlhosting.net",
-    user : "sql4432813",
-    database : "sql4432813",
-    password: "sewZMpQMeb"
+    host : "mysql-52374-0.cloudclusters.net",
+    user : "do3bl",
+    database : "dress",
+    password: "123456789",
+    port: "16397"
 });
 
 
 router.post('/singup',(req,res,next)=>{
-    const singup = {
-        password:req.body.password,
-        email:req.body.email,
-        username:req.body.username,
-        phone:req.body.phone
+const singup = {
+password:req.body.password,
+email:req.body.email,
+username:req.body.username,
+phone:req.body.phone
     }
-    console.log(singup["phone"])
-    db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]],(error, rows, fields)=>{
-        if(error){
-            console.log("failed to quere for user"+err);
-            res.status(400).json({
-                massege:"error"
-            });
-        }
-        console.log(rows.length)
+db.query('SELECT * FROM mobile_user WHERE email = ? '
+,[singup["email"]],(error, rows, fields)=>{
+if(error){
+res.status(400).json({
+ massege:"error"
+});
+    }
         if(rows.length === 0){
-            db.query("insert into mobile_user(user_name, email, password, phone)values(?,?,?,?)",[singup["username"],singup["email"],singup["password"],singup["phone"]],(error,rows)=>{
-                db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]], (error,result)=>{
-                    const userid = result[0]['user_mubile_id'];
-                    db.query('INSERT INTO clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)',[userid,singup["username"],singup["phone"]])
-                    res.status(220).json({
+db.query(`insert into mobile_user
+(user_name, email, password, phone)values(?,?,?,?)`,
+[singup["username"],singup["email"],singup["password"],
+singup["phone"]],(error,rows)=>{
+db.query('SELECT * FROM mobile_user WHERE email = ? ',
+[singup["email"]], (error,result)=>{
+if(error){
+console.log(error);
+res.status(404).json({
+message:error
+})
+}else{
+const userid = result[0]['user_mubile_id'];
+db.query(`INSERT INTO 
+clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)`,
+[userid,singup["username"],singup["phone"]])
+res.status(220).json({
                         result
-                    })
+                    });
+                    }                    
                 });
             });
-            
         }else{
             res.status(210).json({
                 data:rows,
                 message:"exict"
-            })
+            });
         }
-        
     });
 
 });
@@ -57,20 +66,18 @@ router.post('/login',(req, res, next) => {
         password:req.body.password,
         email:req.body.email,
     }
-    console.log(login);
-    db.query("select * from mobile_user where email = ? and password = ?",[login["email"],login["password"]],(error,rows,fields)=>{
+    db.query(`select * from mobile_user where email = ? and password = ?`,
+    [login["email"],login["password"]],(error,rows,fields)=>{
         if(error){
             res.json({
                 message:"error"
             });
         }
-        if(!rows[0]){
-            console.log(rows[0]);
+        if(!rows[0]){            
             res.status(210).json({
             message:'not ok'
             });
         }else{
-            console.log(rows[0]);
             res.status(205).json({rows})
         }
         
@@ -85,7 +92,6 @@ router.post('/personal',(req, res, next) => {
         username:req.body.username,
         phone:req.body.phone
     }
-
     db.query('SELECT * FROM mobile_user WHERE email = ?',[personalpr["email"]], (error,rows,fields)=>{
         if(error){
             res.json({
@@ -96,7 +102,6 @@ router.post('/personal',(req, res, next) => {
         db.query('UPDATE  mobile_user SET user_name = ? , email = ? , password = ?, phone = ? WHERE email = ?',[personalpr["username"],personalpr["newemail"],personalpr["password"],personalpr["phone"],personalpr["email"]]);
         db.query('UPDATE clintsize SET clint_name = ? , clint_phone = ?  WHERE mubile_user_id = ?',[personalpr["username"],personalpr["phone"],userid]);
         db.query('SELECT * FROM mobile_user WHERE email = ?',[personalpr["newemail"]],(error,result)=>{
-            console.log(result);
             res.status(220).json(result);
         });
         
@@ -106,9 +111,8 @@ router.post('/personal',(req, res, next) => {
 
 router.post('/clintsize',(req,res,next)=>{
     const userid = req.body.userid;
-    console.log(userid)
+    
     db.query('SELECT * FROM clintsize WHERE mubile_user_id = ?',[userid],(error,row)=>{
-        console.log(row[0]);
         res.json(row);
     });
 });
@@ -147,7 +151,6 @@ router.post('/newclintsize',(req,res,next)=>{
                 message:"not ok"
             });
         }
-        console.log("ok");
         res.status(210).json({
             message:"okk"
         });
@@ -175,7 +178,7 @@ router.post('/updatesize',(req,res,next)=>{
     ],
     (error, rows, fields)=>{
         if(error){
-            console.log(error);
+            
             res.status(220).json({
                 message:"not ok"
             });
@@ -189,30 +192,15 @@ router.post('/updatesize',(req,res,next)=>{
 router.post('/ordersress',(req,res,next)=>{
     const order = {
         userid:req.body.userid,
-        username:req.body.username,
         fabricid:req.body.fabricid,
         dressnum:req.body.dressnum,
         bttn:req.body.bttn,
-        chist:req.body.chist,
-        cholder:req.body.cholder,
-        arm:req.body.arm,
-        res:req.body.res,
-        hight:req.body.hight,
-        lower:req.body.lower,
-        muscle:req.body.muscle,
-        nick:req.body.nick,
+        hight:req.body.hight
     }
+    console.log(order)
     // get dress info
     db.query('SELECT * FROM dress_type WHERE dress_id = ?',[order["dressnum"]],(error,row,fields)=>{
-        var dressname = row[0]["dress_name"]
-        // console.log(row);
-        // console.log(dressname);
-        // get fabric info
         db.query('SELECT * FROM fabrics WHERE fabric_id = ?',[order["fabricid"]],(error,row,fields)=>{
-            var fabricname = row[0]["fabric_name"];
-            var fabricMprice = row[0]["price_per_m"];
-            var tax_amount = row[0]["tax_amount"];
-            var color = row[0]["color"];
             // get total price
             var bttn = order["bttn"];
             var hight = order["hight"];
@@ -221,38 +209,51 @@ router.post('/ordersress',(req,res,next)=>{
             if(bttn <= 30){
                 var nededsentemetr = hight*2;
                 var nededmetrs = nededsentemetr/100                
-                console.log("*1");
+                
             }else if(bttn >= 31 && bttn <= 50){
                 var nededsentemetr = hight * 2.80;
                 var nededmetrs = nededsentemetr/100 
-                console.log("*2")
+                
             }
+            console.log(nededmetrs)
             var forplace = 100;
             var total_price = nededmetrs * pricePerm + taxamount + forplace;
-            console.log(total_price);
-            var mubile = 1;
             var today = new Date();
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
             var dateTime = date+' '+time;
-            console.log(dateTime);
+            
             db.query('SELECT clint_id FROM clintsize WHERE mubile_user_id = ?',[order['userid']],(error,row,fields)=>{
                 const clintsizeid = row[0]['clint_id'];
                 
-                db.query("insert into clint_order(clint_id ,clint_name, fabricid, mubile_id, mubile, fabriccolor, fabricname, total_price, dress_id, dress_type, order_time)values(? ,?, ?, ?, ?, ?, ?, ?, ?, ? ,?)",
+                db.query('INSERT INTO clint_order(clint_id , fabricid, mubile_id, mubile, total_price, dress_id, order_time) VALUES(? ,?, ?, ?, ?, ?, ?)',
                 [
-                    clintsizeid, order["username"], order["fabricid"], order["userid"], mubile, color, fabricname, total_price, order["dressnum"], dressname, dateTime
+                    clintsizeid, order['fabricid'], order['userid'], 1, total_price, order['dressnum'], dateTime
                 ],
                 (error,result,fields)=>{
                     if(error){
                         res.status(404).json({
-                            message:"not ok"
+                            message:"not ok",
+                            error:error
                         });
                     }
-                    res.status(572).json({
-                        data:result,
-                        message:"okk"
-                    });
+                    const clint_order = result['insertId'];
+                    db.query('INSERT INTO workplace(clintid, fabric_id, date_order, metr_num, dress_id, order_clint)VALUES(?, ?, ?, ?, ?, ? )',
+                    [
+                        clintsizeid, order['fabricid'], dateTime, nededmetrs, order['dressnum'], clint_order
+                    ],(error,result)=>{
+                        if(error){
+                            res.status(404).json({
+                                message:"not ok",
+                                error:error
+                            });
+                        }
+                        res.status(572).json({
+                            data:result,
+                            message:"okk"
+                        });
+                    })
+                    
                 });
             });
 
@@ -263,7 +264,8 @@ router.post('/ordersress',(req,res,next)=>{
 
 router.post('/status',(req,res,next)=>{
     const userid = req.body.userid;
-    db.query('select clint_orderid, total_price,bayed,is_bayed, order_time from clint_order where mubile_id = ?',
+    db.query(`select clint_orderid, total_price,bayed,is_bayed, 
+    order_time from clint_order where mubile_id = ?`,
     [userid],
     (error, result,fields)=>{
         if(error){
@@ -272,11 +274,9 @@ router.post('/status',(req,res,next)=>{
             });
         }
         res.status(210).json(result);
-
     }
     )
 });
-
 
 
 router.post('/confirm',(req,res,next)=>{
@@ -285,34 +285,124 @@ router.post('/confirm',(req,res,next)=>{
     const thebayment = req.body.thebaymnt;
     const imagename = req.body.imagename;
     const imageb1ase = req.body.imagebase;
+    var date = new Date().toISOString().substring(0,10);
+    var myPastDate=new Date(date);
+    myPastDate.setDate(myPastDate.getDate() - 10);
+    var isost =new Date (myPastDate).toISOString().substring(0,10)
+
+    db.query('SELECT clintsize.clint_id FROM clintsize WHERE clintsize.mubile_user_id = ?',[userid],(error,result)=>{
+        if(error){
+            res.status(400).json({
+                error:error
+            });
+        }
+        const userId = result[0]['clint_id']
+        db.query('UPDATE clint_order SET is_bayed = 1 , bayed = ? WHERE clint_orderid = ?',[thebayment,invonum],(error,result)=>{
+            if(error){
+                res.status(400).json({
+                    error:error
+                });
+            }
+            res.status(200).json({
+                result:result
+            })
+        })
+    })
     
-     db.query('UPDATE clint_order SET is_bayed = 1, bayed = ? WHERE clint_orderid = ?',
-     [thebayment, invonum],
-     (error, row, fields)=>{
-         if(error){
-             res.status(404).json({
-                 message:"error"
-             });
-         }   
-     });
+
+
+
+});
+
+
+router.post('/dfzf',(req,res,next)=>{
+    const invonum = req.body.ordernum;
+    const userid = req.body.userid;
+    const thebayment = req.body.thebaymnt;
+    const imagename = req.body.imagename;
+    const imageb1ase = req.body.imagebase;
+     
   
- db.query('insert into invo_imafe(image_name, image_coded, clint_order, mubile_clint )values(?, ?, ?, ?)',
- [
-     imagename, imageb1ase, invonum, userid
- ],
- (error, row, fields)=>{
+
+// get employee he dont have work for the 10 past days
+// first get the employee how work in departmnt 2 
+ db.query('SELECT employees.employee_id, employees.employee_name, employees.dept_id FROM employees, departments WHERE departments.department_id = employees.dept_id and dept_id = 2',(error,result)=>{
      if(error){
-        //  console.log(error);
-        res.status(404).json({
-            message:"error",
-            error
-        });
+         console.log("select error:"+error)
+         res.status(400).json({
+             message:error
+         });
+     }else{
+// get date of current date
+         var date = new Date().toISOString().substring(0,10);
+// get 10 dayes past 
+        var myPastDate=new Date(date);
+        myPastDate.setDate(myPastDate.getDate() - 10);
+        var isost =new Date (myPastDate).toISOString().substring(0,10)
+// for to get eche employee and chek if he have work in the last 10 days
+        var emptyEmployee;
+         for(var i = 0; i <= result.length - 1; ++i){
+                var emplyee = result[i]['employee_id'];
+                console.log(emplyee);
+                db.query("select * from dress_number where dress_worker_id = ? and date_time_taked BETWEEN ? and ?  ",[emplyee,isost, date],(error,row)=>{
+                    if(error){
+                        console.log("select:"+error)
+                        res.status(400).json({
+                            error:error
+                        });
+                    }
+// if employee has 3 work for 10 days dont accept 
+                        if(row.length > 3){ 
+                            res.status(202).json({
+                                message:"more then 3"
+                            });
+                         }else if(row.length <= 3){
+                             emptyEmployee = emplyee;
+                             console.log(emptyEmployee);
+                         } 
+                        //  db.query('insert into dress_number(dress_worker_id, date_time_taked, order_id) values(?, ?, ?)',[emptyEmployee, date, invonum],(error,result)=>{
+                        //     if(error){
+                        //         console.log("insert:"+error)
+                        //         res.status(400).json({
+                        //             error
+                        //         });
+                        //     }else{
+                        //         console.log("okkk")
+                            //   db.query('UPDATE clint_order SET is_bayed = 1, bayed = ? WHERE clint_orderid = ?',
+                            //   [thebayment, invonum],
+                            //   (error, row, fields)=>{
+                            //       if(error){
+                            //           console.log("update: "+ error)
+                            //           res.status(404).json({
+                            //               message:error
+                            //           });
+                            //       }   
+                            //   });
+                              // db.query('insert into invo_imafe(image_name, image_coded, clint_order, mubile_clint )values(?, ?, ?, ?)',
+                              // [
+                              //     imagename, imageb1ase, invonum, userid
+                              // ],
+                              // (error, row, fields)=>{
+                              //     if(error){
+                              //        //  console.log(error);
+                              //        res.status(404).json({
+                              //            message:"error",
+                              //            error
+                              //        });
+                              //     }
+                              // });
+                              
+                        //     }
+                        // })
+                })
+         }
+         
+         res.status(200).json({
+            message:"ok"
+        })
      }
- }
- )
- res.status(200).json({
-     message:"ok"
- })
+ });
+ 
 });
 
 router.get('/fabrics',(req,res,next)=>{
@@ -324,6 +414,24 @@ router.get('/fabrics',(req,res,next)=>{
         }
         res.status(200).json(rows);
     });
-})
+});
+
+router.get('/dresstype',(req,res,next)=>{
+    db.query('SELECT * FROM dress_type',(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(404).json({
+                error:error
+            });
+        }else{
+            console.log(result);
+            res.status(200).json(
+                result
+            );
+        }
+    });
+});
+
+
 
 module.exports = router ;
