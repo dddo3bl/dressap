@@ -432,6 +432,11 @@ router.get('/dresstype',(req,res,next)=>{
     });
 });
 
+router.get('/',(req,res)=>{
+    res.json({
+        work:"working"
+    })
+})
 
 
 module.exports = router ;
