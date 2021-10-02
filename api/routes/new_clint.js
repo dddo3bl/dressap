@@ -127,7 +127,7 @@ router.post('/newclintsize',(req,res,next)=>{
         nick:req.body.nick,
         email:req.body.email,
     };
-    db.query('INSERT INTO clintsize (hight, bttn, cholder ,chist_whdth, nick, hand_whdth, lower_part, hand_length, muscle ,mubile_user_id) VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    db.query('INSERT INTO clintsize (hight, bttn, cholder ,chist_whdth, nick, hand_whdth, lower_part, hand_length, muscle ,mubile_user_id,clint_name, clint_phone) VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)',
     [
         sizes["hight"],
         sizes["bttn"],
@@ -139,10 +139,14 @@ router.post('/newclintsize',(req,res,next)=>{
         sizes["hand_length"],
         sizes["muscle"],
         sizes["userid"],
+        sizes["username"],
+        sizes["clint_phone"],
+        
     ],(error, rows,fields)=>{
         if(error){
             res.status(220).json({
-                message:"not ok"
+                message:"not ok",
+                error
             });
         }
         res.status(210).json({
