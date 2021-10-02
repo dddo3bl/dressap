@@ -19,31 +19,25 @@ email:req.body.email,
 username:req.body.username,
 phone:req.body.phone
     }
-db.query('SELECT * FROM mobile_user WHERE email = ? '
-,[singup["email"]],(error, rows, fields)=>{
-if(error){
-res.status(400).json({
- massege:"error"
-});
+    console.log(singup)
+db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]],(error, rows, fields)=>{
+    if(error){
+        res.status(400).json({
+         massege:"error"
+        });
     }
         if(rows.length === 0){
-db.query(`insert into mobile_user
-(user_name, email, password, phone)values(?,?,?,?)`,
-[singup["username"],singup["email"],singup["password"],
-singup["phone"]],(error,rows)=>{
-db.query('SELECT * FROM mobile_user WHERE email = ? ',
-[singup["email"]], (error,result)=>{
-if(error){
-console.log(error);
-res.status(404).json({
-message:error
-})
-}else{
-const userid = result[0]['user_mubile_id'];
-db.query(`INSERT INTO 
-clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)`,
-[userid,singup["username"],singup["phone"]])
-res.status(220).json({
+    db.query(`insert into mobile_user(user_name, email, password, phone)values(?,?,?,?)`,[singup["username"],singup["email"],singup["password"],singup["phone"]],(error,rows)=>{
+        db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]], (error,result)=>{
+            if(error){
+                console.log(error);
+                res.status(404).json({
+                message:error
+                })
+            }else{
+                const userid = result[0]['user_mubile_id'];
+                db.query(`INSERT INTO clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)`,[userid,singup["username"],singup["phone"]])
+                res.status(220).json({
                         result
                     });
                     }                    
@@ -133,7 +127,7 @@ router.post('/newclintsize',(req,res,next)=>{
         nick:req.body.nick,
         email:req.body.email,
     };
-    db.query('UPDATE clintsize SET hight = ?, bttn = ?, cholder = ?, chist_whdth = ?, nick = ? , hand_whdth = ?, lower_part = ?, hand_length = ?, muscle = ? WHERE mubile_user_id = ?',
+    db.query('INSERT INTO clintsize (hight, bttn, cholder ,chist_whdth, nick, hand_whdth, lower_part, hand_length, muscle ,mubile_user_id) VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
         sizes["hight"],
         sizes["bttn"],
@@ -360,40 +354,7 @@ router.post('/dfzf',(req,res,next)=>{
                              emptyEmployee = emplyee;
                              console.log(emptyEmployee);
                          } 
-                        //  db.query('insert into dress_number(dress_worker_id, date_time_taked, order_id) values(?, ?, ?)',[emptyEmployee, date, invonum],(error,result)=>{
-                        //     if(error){
-                        //         console.log("insert:"+error)
-                        //         res.status(400).json({
-                        //             error
-                        //         });
-                        //     }else{
-                        //         console.log("okkk")
-                            //   db.query('UPDATE clint_order SET is_bayed = 1, bayed = ? WHERE clint_orderid = ?',
-                            //   [thebayment, invonum],
-                            //   (error, row, fields)=>{
-                            //       if(error){
-                            //           console.log("update: "+ error)
-                            //           res.status(404).json({
-                            //               message:error
-                            //           });
-                            //       }   
-                            //   });
-                              // db.query('insert into invo_imafe(image_name, image_coded, clint_order, mubile_clint )values(?, ?, ?, ?)',
-                              // [
-                              //     imagename, imageb1ase, invonum, userid
-                              // ],
-                              // (error, row, fields)=>{
-                              //     if(error){
-                              //        //  console.log(error);
-                              //        res.status(404).json({
-                              //            message:"error",
-                              //            error
-                              //        });
-                              //     }
-                              // });
-                              
-                        //     }
-                        // })
+                        
                 })
          }
          
@@ -434,7 +395,8 @@ router.get('/dresstype',(req,res,next)=>{
 
 router.get('/',(req,res)=>{
     res.json({
-        work:"working"
+        work:"working",
+        working:"working2"
     })
 })
 
