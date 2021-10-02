@@ -27,19 +27,30 @@ db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]],(error, 
         });
     }
         if(rows.length === 0){
-    db.query(`insert into mobile_user(user_name, email, password, phone)values(?,?,?,?)`,[singup["username"],singup["email"],singup["password"],singup["phone"]],(error,rows)=>{
+    db.query('insert into mobile_user(user_name, email, password, phone)values(?,?,?,?)',[singup["username"],singup["email"],singup["password"],singup["phone"]],(error,rows)=>{
+        console.log(rows['insertId']);
+        if(error){
+            res.json({error})
+        }
         db.query('SELECT * FROM mobile_user WHERE email = ? ',[singup["email"]], (error,result)=>{
             if(error){
                 console.log(error);
                 res.status(404).json({
                 message:error
                 })
+                
             }else{
-                const userid = result[0]['user_mubile_id'];
-                db.query(`INSERT INTO clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)`,[userid,singup["username"],singup["phone"]])
-                res.status(220).json({
+                const userid = rows['insertId'];
+                console.log(userid)
+                db.query(`INSERT INTO clintsize(mubile_user_id, clint_name, clint_phone) VALUES(?, ?, ?)`,[userid,singup["username"],singup["phone"]],(error,rows1)=>{
+                    if(error){
+                        res.json({error});
+                    }
+                    res.status(220).json({
                         result
                     });
+                })
+                
                     }                    
                 });
             });
